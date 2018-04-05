@@ -3,9 +3,9 @@ var fs = require('fs');
 
 var args = process.argv.slice(2);
 
-var fileSM = "/home/luigi/workspace/scala/SM_"+ args[0] + "/output/"+ args[0] + "_" + args[1] +"/SM/part-00000";
-var fileNodes = "/home/luigi/workspace/scala/SM_"+ args[0] + "/output/"+ args[0] + "_" + args[1] +"/nodes/part-00000";
-var resultsFile = "/home/luigi/workspace/affinity-propagation/output/" + args[0] + "_" + args[1] + ".txt";
+var fileSM = "path/to/similarity/matrix/file"
+var fileNodes = "path/to/data/points/file"
+var resultsFile = "path/to/output.txt";
 
 
 var sm = fs.readFileSync(fileSM).toString().split("\n");
