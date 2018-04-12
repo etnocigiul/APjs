@@ -159,7 +159,7 @@ module.exports = {
 
             if (time) {
                 time = process.hrtime(time)
-                times.R += (time[0] * 1e9 + time[1]) / 1e3
+                times.R += (time[0] * 1e9 + time[1]) / 1e6
             }
 
             // update availability matrix
@@ -188,7 +188,7 @@ module.exports = {
             
             if (time) {
                 time = process.hrtime(time)
-                times.A += (time[0] * 1e9 + time[1]) / 1e3
+                times.A += (time[0] * 1e9 + time[1]) / 1e6
             }
 
             // check convergence
@@ -221,8 +221,8 @@ module.exports = {
             }
 	}
 
-        times.R = Math.round(times.R / 1e3)
-        times.A = Math.round(times.A / 1e3)
+        times.R = Math.round(times.R / 1e6)
+        times.A = Math.round(times.A / 1e6)
         
        
 
@@ -231,7 +231,7 @@ module.exports = {
 
         if (totalTime) {
             totalTime = process.hrtime(totalTime)
-            times.total = (totalTime[0] * 1e9 + totalTime[1]) / 1e3
+            times.total = totalTime[0] + (totalTime[1] / 1e9)
         }
         
         R = null
