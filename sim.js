@@ -44,12 +44,12 @@ function groupNodes(dataset) {
     
     for(var i = 0; i < dataset.length; i++) {
         adjList[dataset[i][0]] = new Array();   
-        adjList[dataset[i][1]] = new Array();   
+        //adjList[dataset[i][1]] = new Array();   solo se nel dataset abbiamo che a -> b, allora b -> a
         }
 
     for(var i = 0; i < dataset.length; i++){
         adjList[dataset[i][0]].push(dataset[i][1]);
-        adjList[dataset[i][1]].push(dataset[i][0]);
+        //adjList[dataset[i][1]].push(dataset[i][0]);   solo se nel dataset abbiamo che a -> b, allora b -> a
         }
     
     return adjList;
