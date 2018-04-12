@@ -5,10 +5,9 @@ var args = process.argv.slice(2);
 
 var ep = process.hrtime()
 
-
-var datasetFile = "/home/conte/workspace/ap_sm/" + args[0] + "_" + args[1] + ".txt"
-var smFile = "/home/conte/workspace/ap_sm/" + args[0] + "_" + args[1] + "/SM/part-00000"
-var nodesFile = "/home/conte/workspace/ap_sm/" + args[0] + "_" + args[1] + "/nodes/part-00000"
+var datasetFile = "path/to/dataset_input"
+var smFile = "path/to/sm_file_output"
+var nodesFile = "path/to/nodes_file_output"
 
 var dataset = fs.readFileSync(datasetFile).toString().split("\n");
 dataset = keyValueForm(dataset)
@@ -18,17 +17,16 @@ var nodes = Object.keys(adjList)
 
 var sm = calculateSM(adjList, nodes)
 
-/// write to file
-fs.writeFile(smFile, formatResult(sm), (err) =>{
+//Scrittura file di output contenente la matrice delle similarità
+fs.writeFile(smFile, formatSimilarityMatrix(sm), (err) =>{
     if(err) throw err;
 });
 
-fs.writeFile(nodesFile, formatResult2(nodes), (err) =>{
+//Scrittura file di output relativo ai nodi
+fs.writeFile(nodesFile, formatNodesList(nodes), (err) =>{
     if(err) throw err;
 });
 
-console.log(sm.length)
-console.log(nodes.length)
 
 function keyValueForm(dataset){
     dataset = dataset.filter(correctLengthString)
@@ -40,23 +38,24 @@ function keyValueForm(dataset){
     return dataset;
 };
 
+//Funzione per la creazione delle liste di adiacenza dei nodi del dataset
 function groupNodes(dataset) {
     var adjList = {};
     
     for(var i = 0; i < dataset.length; i++) {
         adjList[dataset[i][0]] = new Array();   
-        //adjList[dataset[i][1]] = new Array();   
+        adjList[dataset[i][1]] = new Array();   
         }
 
     for(var i = 0; i < dataset.length; i++){
         adjList[dataset[i][0]].push(dataset[i][1]);
-        //adjList[dataset[i][1]].push(dataset[i][0]);
+        adjList[dataset[i][1]].push(dataset[i][0]);
         }
     
     return adjList;
     };
 
-
+//Funzione che calcola e restituisce la matrice delle similarità tra coppie di nodi
 function calculateSM(adjList, nodes){
     var v_min = Number.MAX_VALUE,
         v_max = -Number.MAX_VALUE;
@@ -66,8 +65,7 @@ function calculateSM(adjList, nodes){
         sm[i] =  new Array();
         for(var j = 0; j < n; j++){    
                 if(i != j){
-                    sm[i][j] = calculateSimilarity(adjList[nodes[i]], adjList[nodes[j]], nodes[i], nodes[j]);
-                  //  console.log("s(" + nodes[i] + ", " + nodes[j] + ")= " + sm[i][j])
+                    sm[i][j] = calculateSimilarity(adjList[nodes[i]], adjList[nodes[j]]);
 
                     if(sm[i][j] > v_max) v_max = sm[i][j];
                     else if(sm[i][j] < v_min) v_min = sm[i][j];
@@ -83,7 +81,8 @@ function calculateSM(adjList, nodes){
     return sm;
 };
 
-function calculateSimilarity(al1, al2, n1, n2){
+//Funzione che calcola la similarità che intercorre tra una coppia di nodi
+function calculateSimilarity(al1, al2){
     var a = intersect(al1, al2).length;
     var b = union(al1, al2).length;
     var sim, default_preference = 10.0;
@@ -92,15 +91,16 @@ function calculateSimilarity(al1, al2, n1, n2){
         sim = jaccard * default_preference;
         }
     else sim = -100.0;
-//console.log("s(" + n1 + ", " + n2 + ")= " + sim + " ---> a: " + a + " b: " + b + " j: " + jaccard)
     return sim;
 }
 
+//Funzione che prende come parametro due array e restituisce l'array risultante dalla loro unione
 function union(a, b) { return a.concat(b) };
 
+//Funzione che prende come parametro due array e restituisce l'array risultante dalla loro intersezione
 function intersect(a, b){
     var t;
-    if (b.length > a.length) t = b, b = a, a = t; // indexOf to loop over shorter
+    if (b.length > a.length) t = b, b = a, a = t;
     return a.filter(function (e) {
         return b.indexOf(e) > -1;
     });
@@ -114,12 +114,12 @@ function correctLengthString(s){
     return s.length > 0 && !s.includes("#");
 };
 
-function formatResult(result){
-    return result.map((v) => v.toString().split(",").join(" ")).toString().split(",").join("\n")
+function formatSimilarityMatrix(sm){
+    return sm.map((v) => v.toString().split(",").join(" ")).toString().split(",").join("\n")
 };
 
-function formatResult2(result){
-    return (result.toString() + "\n").split(",").join("\n")
+function formatNodesList(nodes){
+    return (nodes.toString() + "\n").split(",").join("\n")
 };
 
 function objToString (obj) {
@@ -127,4 +127,3 @@ function objToString (obj) {
     for (var p in obj) string += '\t' + p + ' -> [' + obj[p] + ']\n';
     return string;
 };
-
